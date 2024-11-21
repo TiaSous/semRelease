@@ -22,7 +22,7 @@ jobs:
       
       - name: Get lastet tag
         run: |
-          git fetch -tags
+          git fetch --tags
           LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "v0.0.0")
           echo "TAG=$LAST_TAG" >> $GITHUB_ENV
       
