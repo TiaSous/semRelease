@@ -56,7 +56,7 @@ jobs:
       - name: Create new tag
         run: |
           if [[ "$NEW_TAG" != "$TAG" ]]; then
-            git tag -a "$NEW_TAG"
+            git tag -a "$NEW_TAG" -m "Release $NEW_TAG"
             git push origin tag "$NEW_TAG"
           fi
         
