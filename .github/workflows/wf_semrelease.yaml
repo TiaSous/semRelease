@@ -37,14 +37,14 @@ jobs:
           MAJOR=$(echo "$VERSION_CLEANED" | cut -d '.' -f 1)
           MINOR=$(echo "$VERSION_CLEANED" | cut -d '.' -f 2)
           PATCH=$(echo "$VERSION_CLEANED" | cut -d '.' -f 3)
-          if [[ "$TYPE"== *"fix"* ]]; then
+          if [[ "$TYPE"== *fix* ]]; then
             PATCH=$((PATCH + 1))
 
-          elif [[ "$TYPE" == *"feat"* ]]; then
+          elif [[ "$TYPE" == *feat* ]]; then
             MINOR=$((MINOR + 1))
             PATCH=0
 
-          elif [[ "$TYPE" == *"breakingChange"* ]]; then
+          elif [[ "$TYPE" == *breakingChange* ]]; then
             MAJOR=$((MAJOR + 1))
             MINOR=0
             PATCH=0
