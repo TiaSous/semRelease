@@ -37,7 +37,6 @@ jobs:
           MAJOR=$(echo "$VERSION_CLEANED" | cut -d '.' -f 1)
           MINOR=$(echo "$VERSION_CLEANED" | cut -d '.' -f 2)
           PATCH=$(echo "$VERSION_CLEANED" | cut -d '.' -f 3)
-
           if [[ "$TYPE"== *"fix"* ]]; then
             PATCH=$((PATCH + 1))
 
