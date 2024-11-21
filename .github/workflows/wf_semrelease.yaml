@@ -1,0 +1,69 @@
+name: release version
+
+on:
+  push: 
+    branches:
+      - main
+
+jobs:
+  sam-release:
+    name: push - Tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
+      
+      - name: Setup Git
+        run: |
+          git config user.name "action"
+          git config user.email "action@workflow.com"
+      
+      - name: Get lastet tag
+        run: |
+          git fetch -tags
+          LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "v0.0.0")
+          echo "TAG=$LAST_TAG" >> $GITHUB_ENV
+      
+      - name: Analyze commit message
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "TYPE=$COMMIT_MSG" >> $GITHUB_ENV
+      
+      - name: Determine new version
+        run: |
+          VERSION_CLEANED=${TAG:1}
+          MAJOR=$(echo "$VERSION_CLEANED" | cut -d '.' -f 1)
+          MINOR=$(echo "$VERSION_CLEANED" | cut -d '.' -f 2)
+          PATCH=$(echo "$VERSION_CLEANED" | cut -d '.' -f 3)
+
+          if [[ "$TYPE "== *"fix"* ]]; then
+            PATCH=$((PATCH + 1))
+
+          elif [[ "$TYPE" == *"feat"* ]]; then
+            MINOR=$((MINOR + 1))
+            PATCH=0
+
+          elif [[ "$TYPE" == *"breakingChange"* ]]; then
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+          fi
+
+          echo "NEW_TAG=v$MAJOR.$MINOR.$PATCH" >> $GITHUB_ENV
+        
+      - name: Create new tag
+        run: |
+          if [[ "$NEW_TAG" != "$TAG" ]]; then
+            git tag -a "$NEW_TAG"
+            git push origin tag "$NEW_TAG"
+          fi
+        
+      - name: Show new version
+        run: |
+          if [[ "$NEW_TAG" != "$TAG" ]]; then
+            echo "Voici le nouveau tag $NEW_TAG"
+          else
+            echo "Ce commit n'a pas conduit à un tag"
+          fi
